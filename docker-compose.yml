@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Python Backend (FastAPI)
+  python-backend:
+    build:
+      context: ./backend/python
+      dockerfile: Dockerfile
+    container_name: vighna-python-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - OLLAMA_MODEL=mistral
+      - OLLAMA_CODE_MODEL=codellama
+      - DATABASE_URL=sqlite:///./vighna_ai.db
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_12345
+    volumes:
+      - ./backend/python:/app
+      - python-db:/app/data
+    networks:
+      - vighna-network
+    command: python app/main.py
+
+  # Node.js Backend (Express + WebSocket)
+  nodejs-backend:
+    build:
+      context: ./backend/nodejs
+      dockerfile: Dockerfile
+    container_name: vighna-nodejs-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - OLLAMA_MODEL=mistral
+      - NODE_ENV=development
+      - PORT=3000
+      - JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_12345
+    volumes:
+      - ./backend/nodejs:/app
+      - /app/node_modules
+    depends_on:
+      - python-backend
+    networks:
+      - vighna-network
+    command: npm start
+
+  # Angular Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vighna-frontend
+    ports:
+      - "4200:4200"
+    environment:
+      - API_URL=http://localhost:8000
+      - WS_URL=ws://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - python-backend
+      - nodejs-backend
+    networks:
+      - vighna-network
+    command: npm start
+
+networks:
+  vighna-network:
+    driver: bridge
+
+volumes:
+  python-db:
+    driver: local

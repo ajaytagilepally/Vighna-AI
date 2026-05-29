@@ -1,0 +1,30 @@
+<div class="app-container">
+  <header class="app-header">
+    <h1>🤖 Vighna AI</h1>
+    <p>Powered by Ollama - Local AI Models</p>
+  </header>
+
+  <nav class="app-nav">
+    <button 
+      [class.active]="activeTab === 'chat'"
+      (click)="selectTab('chat')"
+      class="nav-btn">
+      💬 Chat
+    </button>
+    <button 
+      [class.active]="activeTab === 'code'"
+      (click)="selectTab('code')"
+      class="nav-btn">
+      </> Code
+    </button>
+  </nav>
+
+  <main class="app-main">
+    <app-chat *ngIf="activeTab === 'chat'"></app-chat>
+    <app-code-editor *ngIf="activeTab === 'code'"></app-code-editor>
+  </main>
+
+  <footer class="app-footer">
+    <p>Vighna AI • Made with ❤️ • Powered by Ollama</p>
+  </footer>
+</div>

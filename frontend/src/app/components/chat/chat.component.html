@@ -1,0 +1,40 @@
+<div class="chat-container">
+  <div class="messages-container">
+    <div *ngFor="let message of messages" [ngClass]="'message ' + message.role">
+      <div class="message-avatar">{{ message.role === 'user' ? '👤' : '🤖' }}</div>
+      <div class="message-content">
+        <strong>{{ message.role === 'user' ? 'You' : 'AI' }}</strong>
+        <p>{{ message.content }}</p>
+        <small>{{ message.timestamp | date:'short' }}</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input-area">
+    <div class="model-selector">
+      <label for="model">Model:</label>
+      <select [(ngModel)]="selectedModel" id="model">
+        <option *ngFor="let model of models" [value]="model">{{ model }}</option>
+      </select>
+    </div>
+
+    <div class="input-wrapper">
+      <input 
+        [(ngModel)]="inputMessage"
+        (keyup.enter)="sendMessage()"
+        [disabled]="isLoading"
+        placeholder="Type your message..."
+        class="input-field">
+      <button 
+        (click)="sendMessage()"
+        [disabled]="isLoading || !inputMessage.trim()"
+        class="send-btn">
+        {{ isLoading ? '⏳ Sending...' : '📤 Send' }}
+      </button>
+    </div>
+
+    <div class="action-buttons">
+      <button (click)="clearChat()" class="clear-btn">🗑️ Clear Chat</button>
+    </div>
+  </div>
+</div>

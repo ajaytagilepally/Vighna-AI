@@ -1,0 +1,61 @@
+<div class="code-editor-container">
+  <div class="editor-panel">
+    <div class="panel-header">Code Generator</div>
+    
+    <div class="language-selector">
+      <label for="language">Language:</label>
+      <select [(ngModel)]="selectedLanguage" id="language">
+        <option *ngFor="let lang of codeLanguages" [value]="lang">{{ lang }}</option>
+      </select>
+    </div>
+
+    <div class="prompt-area">
+      <label for="prompt">Describe what you want to code:</label>
+      <textarea 
+        [(ngModel)]="prompt"
+        id="prompt"
+        placeholder="E.g., Create a function to calculate factorial recursively"
+        class="prompt-input"></textarea>
+    </div>
+
+    <div class="action-buttons">
+      <button 
+        (click)="generateCode()"
+        [disabled]="isLoading || !prompt.trim()"
+        class="btn-generate">
+        {{ isLoading ? '⏳ Generating...' : '✨ Generate Code' }}
+      </button>
+      <button 
+        (click)="analyzeCode()"
+        [disabled]="isLoading || !generatedCode.trim()"
+        class="btn-analyze">
+        {{ isLoading ? '⏳ Analyzing...' : '🔍 Analyze' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="results-panel">
+    <div *ngIf="generatedCode || explanation" class="results">
+      <div *ngIf="generatedCode" class="code-section">
+        <div class="section-header">
+          <span>Generated Code</span>
+          <div class="code-buttons">
+            <button (click)="copyCode()" class="copy-btn">📋 Copy</button>
+            <button (click)="clearCode()" class="clear-btn">🗑️ Clear</button>
+          </div>
+        </div>
+        <pre class="code-block"><code>{{ generatedCode }}</code></pre>
+      </div>
+
+      <div *ngIf="explanation" class="explanation-section">
+        <div class="section-header">Explanation</div>
+        <div class="explanation-text">{{ explanation }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="!generatedCode && !explanation" class="empty-state">
+      <div class="empty-icon">💻</div>
+      <p>Generate code or analyze existing code</p>
+    </div>
+  </div>
+</div>
